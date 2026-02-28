@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultimate Interactive Dock</title>
+
+<style>
+
+body{
+    margin:0;
+    height:100vh;
+    background:radial-gradient(circle at center,#0f2027,#203a43,#2c5364);
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    perspective:2000px;
+    overflow:hidden;
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+    color:#fff;
+}
+
+/* ===== Animated Background ===== */
+
+@keyframes ambient{
+    0%{transform:translateX(-5%)}
+    100%{transform:translateX(5%)}
+}
+
+.background-glow{
+    position:absolute;
+    width:200%;
+    height:200%;
+    background:radial-gradient(circle,rgba(0,150,255,.15),transparent 60%);
+    animation:ambient 6s infinite alternate ease-in-out;
+}
+
+/* ===== PANEL BASE ===== */
+
+.panel{
+    position:fixed;
+    top:8%;
+    width:60%;
+    max-height:65vh;
+    padding:40px;
+    overflow:auto;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(35px);
+    border-radius:20px;
+    box-shadow:0 40px 80px rgba(0,0,0,.6);
+    transform-origin:top center;
+    transform:translateY(-150%) scale(.5) rotateX(60deg);
+    opacity:0;
+    transition:all .8s cubic-bezier(.23,1,.32,1);
+    z-index:5;
+}
+
+.panel.active{
+    transform:translateY(0) scale(1) rotateX(0deg);
+    opacity:1;
+}
+
+.panel.closing{
+    transform:translateY(-150%) scale(.4) rotateX(70deg);
+    opacity:0;
+}
+
+/* ===== PHOTO PANEL ===== */
+
+.photo-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.photo-container img{
+    width:280px;
+    border-radius:20px;
+    box-shadow:
+        0 40px 80px rgba(0,0,0,.7),
+        0 0 40px rgba(0,200,255,.7);
+    transition:.5s ease;
+}
+
+.photo-container img:hover{
+    box-shadow:
+        0 50px 100px rgba(0,0,0,.8),
+        0 0 60px rgba(255,100,200,.8);
+}
+
+/* ===== DOCK ===== */
+
+.scene{
+    position:fixed;
+    bottom:45px;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    transform-style:preserve-3d;
+}
+
+.dock{
+    position:relative;
+    width:600px;
+    height:140px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    transform-style:preserve-3d;
+}
+
+/* Rotated glass background - straight edges */
+.dock-bg{
+    position:absolute;
+    width:100%;
+    height:100%;
+    border-radius:0; /* 👈 straight edges */
+
+    background:linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.55),
+        rgba(255,255,255,0.15)
+    );
+
+    backdrop-filter:blur(40px);
+    -webkit-backdrop-filter:blur(40px);
+
+    box-shadow:
+        0 100px 120px rgba(0,0,0,0.8),
+        inset 0 10px 30px rgba(255,255,255,0.6),
+        inset 0 -10px 40px rgba(255,255,255,0.2);
+
+    transform:rotateX(65deg);
+    transform-origin:bottom center;
+}
+
+/* Shine overlay */
+.dock-bg::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:0; /* 👈 straight edges */
+    background:linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.8),
+        rgba(255,255,255,0.05)
+    );
+}
+
+/* Icon layer */
+/* Icon layer */
+.dock-icons{
+    position:relative;
+    width:100%;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    z-index:2;
+}
+
+/* Icons */
+.dock-item{
+    width:75px;
+    height:75px;
+    border-radius:22px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:34px;
+    cursor:pointer;
+
+    background:linear-gradient(to bottom,#ffffff,#e6e6e6);
+
+    box-shadow:
+        0 20px 30px rgba(0,0,0,0.6),
+        0 0 25px rgba(0,150,255,0.5);
+
+    transition:0.3s ease;
+}
+
+.dock-item:nth-child(2){
+    box-shadow:0 20px 30px rgba(0,0,0,0.6),
+               0 0 25px rgba(255,80,120,0.6);
+}
+.dock-item:nth-child(3){
+    box-shadow:0 20px 30px rgba(0,0,0,0.6),
+               0 0 25px rgba(0,255,150,0.6);
+}
+.dock-item:nth-child(4){
+    box-shadow:0 20px 30px rgba(0,0,0,0.6),
+               0 0 25px rgba(255,200,0,0.6);
+}
+
+.dock-item:hover{
+    transform:translateY(-12px) scale(1.15);
+}
+
+</style>
+</head>
+<body>
+
+<div class="background-glow"></div>
+
+<!-- Resume -->
+<div class="panel" id="resumePanel">
+<h1>AVINASH BABU .B</h1>
+<p><strong>UI Web Developer / Software Engineer UI</strong></p>
+
+<h1>Objective</h1>
+<p><strong>
+Innovative and detail-oriented Web Developer with strong foundation in HTML, CSS, JavaScript, and modern frameworks.
+</strong></p>
+
+<h1>Skills & Abilities</h1>
+<p><strong>
+React.js, Bootstrap, JavaScript, HTML5, CSS3, Angular 10/11, Angular Material, GitHub.
+</strong></p>
+
+<h1>Experience</h1>
+<p>
+Software Engineer UI – Level I (2022)<br>
+Assistant Professor (2023–2026)
+</p>
+
+<h1>Education</h1>
+<p>
+MSCS – USA<br>
+B.Tech – Telangana
+</p>
+
+<h1>Strengths</h1>
+<p>
+Quick learner | Analytical thinking | Leadership | Innovative ideas
+</p>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Contact -->
+<div class="panel" id="contactPanel">
+<h1>Contact</h1>
+<p>Email: Prince.avi10@gmail.com</p>
+<p>Home: avibabu510@gmail.com</p>
+<p>Phone: 7032122805</p>
+<p>Location: Telangana</p>
+</div>
+
+<!-- Photo -->
+<div class="panel" id="photoPanel">
+<h1>My Photo</h1>
+<div class="photo-container"> 
+<img src="IMG_1509.JPG" alt="My profile pic">
+</div>
+</div>
+
+<!-- DOCK -->
+<div class="scene">
+    <div class="dock">
+        <div class="dock-bg"></div>
+        <div class="dock-icons">
+            <div class="dock-item" id="homeBtn">🏠</div>
+            <div class="dock-item" id="messageBtn">💬</div>
+            <div class="dock-item" id="musicBtn">🎵</div>
+            <div class="dock-item" id="cameraBtn">📷</div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+const panels = {
+    resume: document.getElementById("resumePanel"),
+    contact: document.getElementById("contactPanel"),
+    photo: document.getElementById("photoPanel")
+};
+
+let activePanel = null;
+let isAnimating = false;
+
+function togglePanel(panel){
+
+    if(isAnimating) return;
+    isAnimating = true;
+
+    if(activePanel === panel){
+        panel.classList.remove("active");
+        panel.classList.add("closing");
+
+        setTimeout(()=>{
+            panel.classList.remove("closing");
+            activePanel = null;
+            isAnimating = false;
+        },800);
+
+    }else{
+
+        if(activePanel){
+            activePanel.classList.remove("active");
+            activePanel.classList.add("closing");
+
+            setTimeout(()=>{
+                activePanel.classList.remove("closing");
+                panel.classList.add("active");
+                activePanel = panel;
+                isAnimating = false;
+            },800);
+
+        }else{
+            panel.classList.add("active");
+            activePanel = panel;
+            setTimeout(()=>{ isAnimating = false; },800);
+        }
+    }
+}
+
+document.getElementById("homeBtn")
+    .addEventListener("click",()=> togglePanel(panels.resume));
+
+document.getElementById("messageBtn")
+    .addEventListener("click",()=> togglePanel(panels.contact));
+
+document.getElementById("cameraBtn")
+    .addEventListener("click",()=> togglePanel(panels.photo));
+
+document.getElementById("musicBtn")
+    .addEventListener("click",()=>{
+        window.open("https://www.linkedin.com/in/avinash-babu-balaboyina-337b2a32b/","_blank");
+    });
+
+</script>
+
+</body>
+</html>
